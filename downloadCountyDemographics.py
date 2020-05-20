@@ -1,4 +1,4 @@
-import requests, pdb, pathlib
+import requests, pdb
 import pandas as pd
 
 
@@ -124,5 +124,4 @@ self._addGrouping('Long Island', li_counties, 'Substate', 'New York', 'North Ame
 self._addGrouping('Westchester/Rockland', wr_counties, 'Substate', 'New York', 'North America', 'United States of America')
 self._addGrouping('Rest of NY', nys_counties, 'Substate', 'New York', 'North America', 'United States of America')
 """
-pathlib.Path('CreatedData').mkdir(parents=True, exist_ok=True) 
 demographics.to_csv('CreatedData/Demographics.csv')

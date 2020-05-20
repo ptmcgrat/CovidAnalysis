@@ -32,4 +32,6 @@ cases_dt['DeltaCases'] = cases_dt['Cases_x'] - cases_dt['Cases_y']
 
 cases_dt = cases_dt[cases_dt.columns[1:6].to_list() + cases_dt.columns[9:].to_list()]
 
+pathlib.Path('CreatedData').mkdir(parents=True, exist_ok=True) 
+
 cases_dt.to_csv('CreatedData/CovidCasesDeaths.csv')

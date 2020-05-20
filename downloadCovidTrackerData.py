@@ -1,7 +1,7 @@
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-import pdb, pathlib
+import pdb
 
 data = {}
 data['GA'] = pd.read_html('https://covidtracking.com/data/state/georgia#historical', index_col = 0)[1].drop(columns=['Screenshots (EDT)','Total','Hospitalized'])
@@ -53,4 +53,3 @@ plt.show()
 sns.lineplot(data = a_dt, x = a_dt.index, y = 'NewDeaths_7', hue = 'Area')
 plt.show()
 
-pathlib.Path('CreatedData').mkdir(parents=True, exist_ok=True) 
