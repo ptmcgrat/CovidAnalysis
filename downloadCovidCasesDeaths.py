@@ -1,5 +1,5 @@
 import pandas as pd
-import datetime
+import datetime, pathlib
 
 county_case_data = 'https://usafactsstatic.blob.core.windows.net/public/data/covid-19/covid_confirmed_usafacts.csv'
 county_death_data = 'https://usafactsstatic.blob.core.windows.net/public/data/covid-19/covid_deaths_usafacts.csv'

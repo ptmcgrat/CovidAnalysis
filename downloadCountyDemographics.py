@@ -1,5 +1,8 @@
-import requests, pdb
+import requests, pdb, pathlib
 import pandas as pd
+from scipy.interpolate import interp1d
+
+pathlib.Path('CreatedData').mkdir(parents=True, exist_ok=True) 
 
 
 county_data = [] # Hold all data as a list before converting into Dataframe
@@ -76,26 +79,30 @@ if compare_dt[(compare_dt.Population_x != compare_dt.Population_y)].shape[0] != 
 	pdb.set_trace()
 
 county_dt = county_dt[(county_dt.AgeGroup > 0) & (county_dt.AgeGroup < 19)]
+
 all_data = []
 
-for index, row in county_dt.iterrows():
-	population = row.County
-	state = row.State
-	region = row.Region
-	total_people = row.Population
+county_dt['Age'] = county_dt['AgeGroup']*5 - 2.5
+county_dt.loc[county_dt['Age']==87.5,'Population'] = county_dt[county_dt['Age']==87.5].Population/2
+county_dt.loc[county_dt['Age']==87.5,'Age'] = 90
 
-	if row.AgeGroup == 18:
-		min_age, max_age = 85, 100
-	else:
-		min_age, max_age = row.AgeGroup*5 - 5, row.AgeGroup*5-1
+for county in county_dt.groupby('County').groups.keys():
+	state = county_dt[county_dt.County == county].iloc[0].State
+	region = county_dt[county_dt.County == county].iloc[0].Region
+	countyFIPS = county_dt[county_dt.County == county].iloc[0].countyFIPS
+	stateFIPS = county_dt[county_dt.County == county].iloc[0].stateFIPS
 
-	for age in range(min_age, max_age+1):
-		people = int(total_people/(max_age - min_age +1)) 
+	ages = county_dt[county_dt.County == county].Age.to_list() + [100] # Add 100
+	num_alive = (county_dt[county_dt.County == county].Population/5).to_list() + [0] # Add 100
+	interp_population = interp1d(ages, num_alive, kind = 'linear')
 
-		t_data = {'PopulationID': population, 'countyFIPS': row.countyFIPS, 'Level': 'County', 'stateFIPS':row.stateFIPS, 'State': state, 'Region': region, 'Country': 'United States of America', 'Continent': 'North America', 'Age': age, '#Alive': people}
+	for age in range(0,101):
+		people = int(interp_population(max(age,3))) 
+		t_data = {'PopulationID': county, 'countyFIPS': countyFIPS, 'Level': 'County', 'stateFIPS':stateFIPS, 'State': state, 'Region': region, 'Country': 'United States of America', 'Continent': 'North America', 'Age': age, '#Alive': people}
 		all_data.append(t_data)
 
 demographics = pd.DataFrame(all_data, index = list(range(len(all_data))))
+
 
 # Add state data
 all_data = []
