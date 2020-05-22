@@ -40,17 +40,21 @@ all_dt['New Deaths per 100,000'] = all_dt['DeltaDeaths']/(all_dt['#Alive'])*1000
 with urlopen('https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json') as response:
 	counties = json.load(response)
 
-map_types = ['Total Cases per 100,000', 'Percent of Predicted Deaths', 'New Cases per 100,000', 'New Deaths per 100,000']
+map_types = {'Total Cases per 100,000':5000, 'Percent of Predicted Deaths':25, 'New Cases per 100,000':500, 'New Deaths per 100,000':50}
 maps = []
 
 for map_type in map_types:
 	maps.append(go.Choroplethmapbox(
+        name = map_type,
 		geojson = counties,
 		locations = all_dt.countyFIPS.tolist(),
 		z = all_dt[map_type].tolist(),
 		text = all_dt.PopulationID.tolist(),
 		visible=False,
-		subplot='mapbox1'
+		subplot='mapbox1',
+        colorscale="Viridis",
+        zmin = 0,
+        zmax = map_types[map_type]
 		))
 maps[0]['visible'] = True
 
@@ -62,10 +66,14 @@ maps[0]['visible'] = True
 
 layout = go.Layout(
 	mapbox1 = dict(
-	domain = {'x': [0.3, 1],'y': [0, 1]},
-	accesstoken = mapbox_token, 
-	zoom = 3),
-	)
+	#domain = {'x': [0.3, 1],'y': [0, 1]},
+	accesstoken = mapbox_token,
+    #margin = {t: 0, b: 0},
+    zoom=3, 
+    center = {"lat": 37.0902, "lon": -95.7129}, 
+    ),
+    width = 1200, 
+    height = 800 )
 
 layout.update(updatemenus=list([
     dict(x=0,
